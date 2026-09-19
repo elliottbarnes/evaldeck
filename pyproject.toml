@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evaldeck"
+version = "0.1.0"
+description = "Replay-first, inspectable contract tests for AI outputs."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{name = "Elliott Barnes"}]
+keywords = ["ai", "evaluation", "llm", "testing", "regression"]
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/elliottbarnes/evaldeck"
+
+[project.scripts]
+evaldeck = "evaldeck.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

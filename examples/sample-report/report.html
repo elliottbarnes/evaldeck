@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<meta name="color-scheme" content="dark light"><title>EvalDeck · Synthetic candidate — two intentional regressions</title>
+<style>
+:root { color-scheme: dark; font: 16px/1.65 ui-sans-serif, system-ui, sans-serif; background: #0c1322; color: #e8eef8; }
+* { box-sizing: border-box; } body { max-width: 1060px; margin: auto; padding: 48px 24px 72px; }
+.eyebrow { color: #79e5cd; font: 700 13px ui-monospace, monospace; letter-spacing: .13em; text-transform: uppercase; }
+h1 { margin: 16px 0 8px; font-size: clamp(32px,5vw,54px); letter-spacing: -.04em; line-height: 1.1; }
+h2 { font-size: 20px; margin: 0; overflow-wrap: anywhere; } h3 { font-size: 14px; color: #b7c8de; }
+p { margin: 10px 0; } .metadata, .intro, footer { color: #b7c8de; font-size: 14px; overflow-wrap: anywhere; }
+.metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin: 32px 0; }
+.metrics div { padding: 18px; background: #162137; border: 1px solid #2a3b54; border-radius: 14px; }
+.metrics strong { display: block; font-size: 34px; } .metrics span { color: #b7c8de; }
+.case, .comparison { border: 1px solid #2a3b54; background: #111c2e; border-radius: 16px; margin: 20px 0; padding: 24px; }
+.case header { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.badge { color: #79e5cd; background: #123e38; border-radius: 6px; padding: 3px 10px; font: 700 12px/1.6 ui-monospace, monospace; }
+.fail .badge { color: #ffd092; background: #4b3220; } .error .badge { color: #ffbac5; background: #502835; }
+pre { background: #0b1423; border: 1px solid #263650; padding: 16px; border-radius: 9px; white-space: pre-wrap; overflow-wrap: anywhere; font: 13px/1.6 ui-monospace, monospace; }
+summary { cursor: pointer; color: #9acaff; } summary:focus-visible { outline: 2px solid #9acaff; outline-offset: 5px; }
+.table-scroll { overflow-x: auto; } table { width: 100%; text-align: left; border-collapse: collapse; font-size: 13px; }
+caption { text-align: left; color: #b7c8de; padding: 12px 0; } th, td { border-top: 1px solid #2a3b54; padding: 10px 12px 10px 0; vertical-align: top; overflow-wrap: anywhere; }
+th { color: #b7c8de; } .error { color: #ffbac5; } footer { margin-top: 30px; }
+@media(max-width:600px) { body { padding: 28px 16px; } .case,.comparison { padding: 18px; } .metrics { gap: 8px; } .metrics div { padding: 12px; } .metrics strong { font-size: 26px; } .metrics span { font-size: 12px; } }
+</style></head><body>
+<div class="eyebrow">EvalDeck / evaluation report</div><h1>Synthetic candidate — two intentional regressions</h1>
+<p class="intro">Provider: replay · Model: offline fixtures · 2026-09-19T01:03:56.274365+00:00</p>
+<p class="intro">local replay lookup time, not model inference. Token usage source: fixture.</p>
+<section class="metrics" aria-label="Run summary"><div><strong>5</strong><span>Total</span></div><div><strong>3</strong><span>Pass</span></div><div><strong>2</strong><span>Fail</span></div><div><strong>0</strong><span>Error</span></div></section><section class="comparison"><h2>Baseline comparison</h2><ul><li><strong>Regressions</strong>: amount-extraction, ticket-routing</li><li><strong>Improvements</strong>: none</li><li><strong>Added</strong>: none</li><li><strong>Removed</strong>: none</li></ul><p>Removed cases count as regressions. Changed prompts or checks require a reviewed new baseline.</p></section><article class="case fail">
+<header><h2>ticket-routing</h2><span class="badge">FAIL</span></header>
+<p class="metadata">0.007 ms · token usage: not supplied</p>
+<details><summary>Prompt</summary><pre>Classify this synthetic support ticket: &#x27;I was charged twice this month.&#x27; Return JSON with category (billing or technical) and confidence (0 to 1).</pre></details>
+<h3>Output</h3><pre>{&quot;category&quot;:&quot;technical&quot;,&quot;confidence&quot;:0.91}</pre>
+<div class="table-scroll"><table><caption>Expectation checks</caption><thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead><tbody><tr><td>json</td><td>PASS</td><td>valid JSON</td></tr><tr><td>required_keys</td><td>PASS</td><td>required keys present</td></tr><tr><td>equals</td><td>FAIL</td><td>expected &quot;billing&quot;, got &quot;technical&quot;</td></tr><tr><td>number_range</td><td>PASS</td><td>number in inclusive range</td></tr></tbody></table></div></article><article class="case fail">
+<header><h2>amount-extraction</h2><span class="badge">FAIL</span></header>
+<p class="metadata">0.005 ms · token usage: not supplied</p>
+<details><summary>Prompt</summary><pre>Extract the refund amount from this synthetic note: &#x27;Please refund the duplicate charge of $42.50.&#x27; Return JSON with numeric amount and currency USD.</pre></details>
+<h3>Output</h3><pre>{&quot;amount&quot;:&quot;42.50&quot;,&quot;currency&quot;:&quot;USD&quot;}</pre>
+<div class="table-scroll"><table><caption>Expectation checks</caption><thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead><tbody><tr><td>required_keys</td><td>PASS</td><td>required keys present</td></tr><tr><td>equals</td><td>PASS</td><td>values match</td></tr><tr><td>number_range</td><td>FAIL</td><td>expected number in [42.5, 42.5], got &#x27;42.50&#x27;</td></tr></tbody></table></div></article><article class="case pass">
+<header><h2>concise-answer</h2><span class="badge">PASS</span></header>
+<p class="metadata">0.003 ms · token usage: not supplied</p>
+<details><summary>Prompt</summary><pre>Return the exact phrase: Your request is being reviewed.</pre></details>
+<h3>Output</h3><pre>Your request is being reviewed.</pre>
+<div class="table-scroll"><table><caption>Expectation checks</caption><thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead><tbody><tr><td>equals</td><td>PASS</td><td>values match</td></tr><tr><td>contains</td><td>PASS</td><td>substring present</td></tr></tbody></table></div></article><article class="case pass">
+<header><h2>escalation-flag</h2><span class="badge">PASS</span></header>
+<p class="metadata">0.003 ms · token usage: not supplied</p>
+<details><summary>Prompt</summary><pre>A synthetic support ticket contains a duplicated payment, but no security concern. Return JSON with escalate false and owner null.</pre></details>
+<h3>Output</h3><pre>{&quot;escalate&quot;:false,&quot;owner&quot;:null}</pre>
+<div class="table-scroll"><table><caption>Expectation checks</caption><thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead><tbody><tr><td>equals</td><td>PASS</td><td>values match</td></tr><tr><td>equals</td><td>PASS</td><td>values match</td></tr></tbody></table></div></article><article class="case pass">
+<header><h2>literal-markup</h2><span class="badge">PASS</span></header>
+<p class="metadata">0.002 ms · token usage: not supplied</p>
+<details><summary>Prompt</summary><pre>Echo this text literally, without executing it: &lt;script&gt;alert(&#x27;synthetic&#x27;)&lt;/script&gt;</pre></details>
+<h3>Output</h3><pre>&lt;script&gt;alert(&#x27;synthetic&#x27;)&lt;/script&gt;</pre>
+<div class="table-scroll"><table><caption>Expectation checks</caption><thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead><tbody><tr><td>equals</td><td>PASS</td><td>values match</td></tr></tbody></table></div></article>
+<footer>EvalDeck 0.1.0 · Deterministic contract checks, not a measure of overall model quality. This report contains prompts and outputs; review before sharing.</footer>
+</body></html>

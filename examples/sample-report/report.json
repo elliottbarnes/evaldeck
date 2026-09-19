@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "evaldeck_version": "0.1.0",
+  "created_at": "2026-09-19T01:03:56.274365+00:00",
+  "label": "Synthetic candidate — two intentional regressions",
+  "provider": "replay",
+  "model": null,
+  "dataset_fingerprint": "5a0a2644a29ce09926967522f00c1c180f484e0be7cca998c9bd2137fc1b7106",
+  "latency_note": "local replay lookup time, not model inference",
+  "usage_source": "fixture",
+  "summary": {
+    "total": 5,
+    "pass": 3,
+    "fail": 2,
+    "error": 0
+  },
+  "cases": [
+    {
+      "id": "ticket-routing",
+      "fingerprint": "9ac2943738b58a6a91f0f0dd6aa4b4e3d25f7cfa82ed59acc46c5a6173954b9f",
+      "prompt": "Classify this synthetic support ticket: 'I was charged twice this month.' Return JSON with category (billing or technical) and confidence (0 to 1).",
+      "status": "fail",
+      "output": "{\"category\":\"technical\",\"confidence\":0.91}",
+      "checks": [
+        {
+          "check": {
+            "type": "json"
+          },
+          "passed": true,
+          "detail": "valid JSON"
+        },
+        {
+          "check": {
+            "type": "required_keys",
+            "keys": [
+              "category",
+              "confidence"
+            ]
+          },
+          "passed": true,
+          "detail": "required keys present"
+        },
+        {
+          "check": {
+            "type": "equals",
+            "path": "/category",
+            "value": "billing"
+          },
+          "passed": false,
+          "detail": "expected \"billing\", got \"technical\""
+        },
+        {
+          "check": {
+            "type": "number_range",
+            "path": "/confidence",
+            "min": 0.8,
+            "max": 1
+          },
+          "passed": true,
+          "detail": "number in inclusive range"
+        }
+      ],
+      "usage": null,
+      "latency_ms": 0.007,
+      "error": null
+    },
+    {
+      "id": "amount-extraction",
+      "fingerprint": "22622f7a99bfbc3683ccd531267671380d6a4a408a69e8441ec319839522ec0e",
+      "prompt": "Extract the refund amount from this synthetic note: 'Please refund the duplicate charge of $42.50.' Return JSON with numeric amount and currency USD.",
+      "status": "fail",
+      "output": "{\"amount\":\"42.50\",\"currency\":\"USD\"}",
+      "checks": [
+        {
+          "check": {
+            "type": "required_keys",
+            "keys": [
+              "amount",
+              "currency"
+            ]
+          },
+          "passed": true,
+          "detail": "required keys present"
+        },
+        {
+          "check": {
+            "type": "equals",
+            "path": "/currency",
+            "value": "USD"
+          },
+          "passed": true,
+          "detail": "values match"
+        },
+        {
+          "check": {
+            "type": "number_range",
+            "path": "/amount",
+            "min": 42.5,
+            "max": 42.5
+          },
+          "passed": false,
+          "detail": "expected number in [42.5, 42.5], got '42.50'"
+        }
+      ],
+      "usage": null,
+      "latency_ms": 0.005,
+      "error": null
+    },
+    {
+      "id": "concise-answer",
+      "fingerprint": "1c440e044e18fff2ae2a37cfaa6540f7fb23f6fd82faa172f27c31f6a053ecbc",
+      "prompt": "Return the exact phrase: Your request is being reviewed.",
+      "status": "pass",
+      "output": "Your request is being reviewed.",
+      "checks": [
+        {
+          "check": {
+            "type": "equals",
+            "value": "Your request is being reviewed."
+          },
+          "passed": true,
+          "detail": "values match"
+        },
+        {
+          "check": {
+            "type": "contains",
+            "value": "being reviewed"
+          },
+          "passed": true,
+          "detail": "substring present"
+        }
+      ],
+      "usage": null,
+      "latency_ms": 0.003,
+      "error": null
+    },
+    {
+      "id": "escalation-flag",
+      "fingerprint": "5d03632260274e0af322131aeff1c4a3438a4f6a36ad3541206a0d53dae93662",
+      "prompt": "A synthetic support ticket contains a duplicated payment, but no security concern. Return JSON with escalate false and owner null.",
+      "status": "pass",
+      "output": "{\"escalate\":false,\"owner\":null}",
+      "checks": [
+        {
+          "check": {
+            "type": "equals",
+            "path": "/escalate",
+            "value": false
+          },
+          "passed": true,
+          "detail": "values match"
+        },
+        {
+          "check": {
+            "type": "equals",
+            "path": "/owner",
+            "value": null
+          },
+          "passed": true,
+          "detail": "values match"
+        }
+      ],
+      "usage": null,
+      "latency_ms": 0.003,
+      "error": null
+    },
+    {
+      "id": "literal-markup",
+      "fingerprint": "389cf80a85aa38c1b7c7d8217911a98f7f69f40778a79940ea40c6b274f10458",
+      "prompt": "Echo this text literally, without executing it: <script>alert('synthetic')</script>",
+      "status": "pass",
+      "output": "<script>alert('synthetic')</script>",
+      "checks": [
+        {
+          "check": {
+            "type": "equals",
+            "value": "<script>alert('synthetic')</script>"
+          },
+          "passed": true,
+          "detail": "values match"
+        }
+      ],
+      "usage": null,
+      "latency_ms": 0.002,
+      "error": null
+    }
+  ],
+  "comparison": {
+    "regressions": [
+      "amount-extraction",
+      "ticket-routing"
+    ],
+    "improvements": [],
+    "added": [],
+    "removed": [],
+    "unchanged": [
+      "concise-answer",
+      "escalation-flag",
+      "literal-markup"
+    ],
+    "has_regressions": true
+  }
+}

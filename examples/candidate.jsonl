@@ -1,0 +1,5 @@
+{"id":"literal-markup","output":"<script>alert('synthetic')</script>"}
+{"id":"ticket-routing","output":"{\"category\":\"technical\",\"confidence\":0.91}"}
+{"id":"amount-extraction","output":"{\"amount\":\"42.50\",\"currency\":\"USD\"}"}
+{"id":"concise-answer","output":"Your request is being reviewed."}
+{"id":"escalation-flag","output":"{\"escalate\":false,\"owner\":null}"}
