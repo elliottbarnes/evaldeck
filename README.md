@@ -11,6 +11,24 @@ EvalDeck is a small Python CLI for teams experimenting with model prompts and st
 - Standalone HTML with escaped content, no JavaScript, no remote assets, and a JSON companion.
 - Zero runtime or test dependencies. Python 3.11+.
 
+## Interactive browser example
+
+[Open EvalDeck on GitHub Pages](https://elliottbarnes.github.io/evaldeck/).
+
+Select one of the five synthetic cases, edit baseline and candidate answers, and inspect every contract result. Fix a regression by copying the baseline, try malformed JSON, or inspect a literal markup output. Results can be downloaded as JSON. Editing marks the previous result stale and disables export until checks rerun.
+
+This is a JavaScript port of the five deterministic check rules, checked against the Python evaluator. It does **not** run Python or a live model. It rejects duplicate JSON keys, invalid Unicode surrogates, nonfinite numbers, excess nesting and answers over 20,000 characters. The numeric subset uses JavaScript numbers and rejects unsafe integer values; use the Python CLI for its full integer range. Only the selected case's status is compared here; dataset fingerprints, removed cases, provider errors and HTML reports remain native CLI features.
+
+```sh
+# Node.js 24+ and Python 3.11+; run from the repository root.
+node --test tests-browser/*.test.mjs
+node scripts/verify-demo.mjs
+python3 -m http.server 8081 --bind 127.0.0.1 --directory demo
+```
+
+Open `http://localhost:8081`. No package install is needed for these checks. CI runs Python tests, packaging, the offline regression gate, browser/native parity and artifact validation before deploying only `demo/`. See [demo verification](docs/DEMO.md).
+
+
 ## Try the offline demo
 
 ```sh
